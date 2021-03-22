@@ -1,4 +1,5 @@
 import os
+import time
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.filedialog as filedialog
@@ -15,6 +16,10 @@ for i in range(10):
     root.grid_columnconfigure(i, minsize=50)
 
 # ---------- SETUP ----------
+timeLimit = 60 * 90
+curTime = 0
+timeStr = StringVar()
+timeStr.set(time.strftime('%H:%M:%S', time.gmtime(max(0, timeLimit - curTime))))
 
 
 def changeBrowserState(newState):
@@ -33,6 +38,8 @@ file = Entry(root, textvariable=path)
 file.grid(row=0, column=0, columnspan=8, sticky=(N, W, S, E))
 browseButton = Button(root, text="Browse", command=browse)
 browseButton.grid(row=0, column=8, columnspan=2, sticky=(N, W, S, E))
+clock = Label(root, textvariable=timeStr, anchor=CENTER)
+clock.grid(row=1, column=6, columnspan=2, sticky=(N, W, S, E))
 
 
 def getKeys(path):
@@ -75,10 +82,14 @@ viewType = 0
 titles = ["Keys", "My Answers"]
 
 
+submitted = False
+
+
 def submit():
+    global submitted
     # ---------- DISABLING ----------
     startTimerButton['state'] = DISABLED
-    bar['value'] = 100
+    submitted = True
     changeAnswersOptionMenuState(DISABLED)
     # ---------- SHOW GRADE ----------
     cntCorrect = countCorrect(keys)
@@ -140,11 +151,12 @@ def startTimer():
     updateTimer()
 
 
-timeLimit = 60 * 90
-
-
 def updateTimer():
-    if bar['value'] <= 100:
+    global submitted, curTime, timeLimit
+    if submitted == False and bar['value'] <= 100:
+        curTime += 1
+        timeStr.set(time.strftime(
+            '%H:%M:%S', time.gmtime(max(0, timeLimit - curTime))))
         bar['value'] += 100 / timeLimit
         root.after(1000, updateTimer)
     else:
@@ -154,7 +166,7 @@ def updateTimer():
 startTimerButton = Button(root, text="Start Timer", command=startTimer)
 startTimerButton.grid(row=1, column=8, columnspan=2, sticky=(N, W, S, E))
 bar = Progressbar(root)
-bar.grid(row=1, column=0, columnspan=8, sticky=(N, W, S, E))
+bar.grid(row=1, column=0, columnspan=6, sticky=(N, W, S, E))
 
 # ---------- INPUT ----------
 
