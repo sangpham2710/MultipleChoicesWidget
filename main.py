@@ -7,9 +7,11 @@ import tkinter.messagebox as messagebox
 
 root = Tk()
 root.title("Multiple choices widget")
+root.geometry('+' + str(round(root.winfo_screenwidth() / 2 - 250)) +
+              '+' + str(round(root.winfo_screenheight() / 2 - 150)))
 root.geometry("500x300")
 
-# root.resizable(False, False)
+root.resizable(False, False)
 for i in range(12):
     root.grid_rowconfigure(i, minsize=20)
 for i in range(10):
